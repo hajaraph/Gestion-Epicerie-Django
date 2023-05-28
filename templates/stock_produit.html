@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.css' %}">
+    <link rel="stylesheet" href="{% static 'addons/datatables.min.css' %}">
+</head>
+<body id="wrapper">
+    {% include 'navbar.html' %}
+    <div id="content-wrapper">
+        <div class="card shadow-sm rounded-0 mt-3 mx-5">
+            <div class="card-header">
+                <h3>Stock des Produits</h3>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags %}
+                        <div id="alert" class="alert alert-{{ message.tags }} alert-dismissible text-center rounded-0 p-0">
+                        {% endif %}
+                            <strong>{{ message }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <form action="{% url 'supp_stock' %}" method="get">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'stock_enregistrement' %}" class="btn btn-primary rounded-0 mb-2" title="Pour enregistrer un produit dans le stock">
+                            <i class="fa fa-plus"></i>
+                             Ajouter
+                        </a>
+                        <p>
+                            Total : <strong>{{ prix_all }} Ar</strong>
+                        </p>
+                        <button class="btn btn-danger rounded-0 h-25" type="submit" id="supp">
+                            <i class="fa fa-trash-alt"></i>
+                            Supp.
+                        </button>
+                    </div>
+                    <table class="table table-responsive-lg table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Nom du produit</th>
+                                <th>Quantité</th>
+                                <th>Prix total</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for produit in list %}
+                            <tr>
+                                <td><input type="checkbox" class="form-control-range" name="id_stock" value="{{ produit.id_stock }}"></td>
+                                <td class="{% if produit.quantite_stock == 0 %}alert-danger{% endif %} {% if produit.quantite_stock <= 2 %}alert-warning{% endif %}">
+                                    {{ produit.id_stock }}
+                                </td>
+                                <td class="{% if produit.quantite_stock == 0 %}alert-danger{% endif %} {% if produit.quantite_stock <= 2 %}alert-warning{% endif %}">
+                                    {{ produit.produit.nom_produit }}
+                                </td>
+                                <td class="{% if produit.quantite_stock == 0 %}alert-danger{% endif %} {% if produit.quantite_stock <= 2 %}alert-warning{% endif %}">
+                                    {{ produit.quantite_stock }} {{ produit.produit.categorie.nom_categorie }}
+                                </td>
+                                <td class="{% if produit.quantite_stock == 0 %}alert-danger{% endif %} {% if produit.quantite_stock <= 2 %}alert-warning{% endif %}">
+                                    {{ produit.prix_total }} Ar
+                                </td>
+                                <td class="{% if produit.quantite_stock == 0 %}alert-danger{% endif %} {% if produit.quantite_stock <= 2 %}alert-warning{% endif %}">
+                                    {{ produit.date_stock }}
+                                </td>
+                                <td><a href="{% url 'mod_stock' produit.id_stock %}" class="btn btn-sm btn-warning" title="Modifier"><i class="fa fa-edit"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'datatables/datatables.js' %}"></script>
+    <script type="text/javascript" src="{% static 'modal.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+           $("#alert").animate({
+            opacity: 1,
+            }, 2000, function() {
+                $("#alert").delay(10000).fadeOut();
+            });
+        });
+    </script>
+</html>

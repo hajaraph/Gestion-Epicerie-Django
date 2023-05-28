@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enregistrement</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+</head>
+<body class="d-flex justify-content-center align-content-center bg-light">
+    <div class="card shadow rounded-0 border-0 px-5 py-3">
+        <div class="card-header text-center border-0">
+            <h1>Enregistrer Vente</h1>
+        </div>
+        <div class="card-body">
+            <div class="px-5">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags %}
+                        <div id="alert" class="alert alert-{{ message.tags }} alert-dismissible text-center rounded-0 p-0">
+                        {% endif %}
+                            <strong>{{ message }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <label for="produit_id">Nom produit</label>
+                        <select id="produit_id" name="produit_id" class="form-control rounded-0" required>
+                            <option selected hidden></option>
+                            <option value="vide">< VIDE ></option>
+                        {% for produit in list %}
+                            <option value="{{ produit.produit.id_produit }}">{{ produit.produit.nom_produit }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <div class="card px-5 py-2 rounded-0 my-4">
+                        <div class="card-title">Choisir : </div>
+                        <div class="my-1">
+                            <label for="quantite_produit">Quantité (Nombre/Kg/Kapoaka/Litre)</label>
+                            <input type="text" name="quantite_produit" id="quantite_produit" class="form-control rounded-0" pattern="[0-9.]+">
+                        </div>
+                        <div class="my-3">
+                            <label for="quantite_produit">Prix si (Kg/Litre ou VIDE)</label>
+                            <input type="number" name="prix_produit" id="prix_produit" class="form-control rounded-0">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="date_new">Date</label>
+                        <input type="date" name="date_new" id="date_new" class="form-control rounded-0" required>
+                    </div>
+                    <div class="row">
+                        <button class="btn btn-primary rounded-0">Enregistrer</button>
+                        <a href="{% url 'accueil' %}" class="btn btn-danger rounded-0 mx-4">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'modal.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+           $("#alert").animate({
+            opacity: 1,
+            }, 2000, function() {
+                $("#alert").delay(10000).fadeOut();
+            });
+        });
+    </script>
+</body>
+</html>

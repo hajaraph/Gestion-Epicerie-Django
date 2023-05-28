@@ -1,0 +1,53 @@
+<nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+    <div class="container-fluid d-flex flex-column p-0">
+        <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand active m-0" href="{% url 'accueil' %}">
+            <div class="sidebar-brand-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="sidebar-brand-text mx-2">
+                <span>Accueil</span>
+            </div>
+        </a>
+        <hr class="sidebar-divider my-0">
+        <ul class="navbar-nav text-light" id="accordionSidebar">
+            <li class="nav-item">
+                <a class="nav-link {{ active_accueil }}" href="{% url 'accueil' %}">
+                    <i class="fa fa-shopping-bag"></i>
+                    <span>Produit Vendu</span>
+                </a>
+            </li>
+            {% if request.user.is_superuser %}
+            <li class="nav-item">
+                <a class="nav-link {{ active_produit }}" href="{% url 'produit_list' %}">
+                    <i class="fa fa-box"></i>
+                    <span>Produit</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ active_list }}" href="{% url 'list_total' %}">
+                    <i class="fas fa-warehouse"></i>
+                    <span>List Total / Jours</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ active_stock }}" href="{% url 'stock_produit' %}">
+                    <i class="fas fa-warehouse"></i>
+                    <span>Stock des Produits</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ active_compte }}" href="{% url 'admin:index' %}">
+                    <i class="fas fa-user-alt"></i>
+                    <span>Compte</span>
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'deconnexion' %}">
+                    <i class="fas fa-power-off"></i>
+                    <span>Deconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

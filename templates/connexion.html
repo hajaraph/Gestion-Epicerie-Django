@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Authentification</title>
+        <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+        <link rel="stylesheet" href="{% static 'bootstrap-5/css/bootstrap.min.css' %}">
+    </head>
+    <body class="d-flex flex-row justify-content-center align-content-center bg-light">
+        <section class="card w-50 mt-5 shadow-lg border-0">
+            <div class="card-body d-flex flex-row justify-content-center align-content-center">
+                <div class="content w-50">
+                    <h4 class="text-center mb-5 mt-5">Authentification</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if message.tags %}
+                                <div id="alert" class="alert alert-{{ message.tags }} alert-dismissible text-center p-0">
+                                {% endif %}
+                                    <strong>{{ message }}</strong>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div>
+                            <label for="EmailCompte" class="form-label">Nom d'utilisateur *</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-start bg-warning border-warning">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                                <input class="form-control rounded-end w-50" type="text" name="UsernameCompte" id="UsernameCompte" placeholder="Entrer Adresse Email" autocomplete autofocus required>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label for="MotPasseCompte" class="form-label">Mot de passe *</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-start bg-warning border-warning">
+                                    <i class="fa fa-lock"></i>
+                                </span>
+                                    <input class="form-control rounded-end w-50" type="password" name="MotPasseCompte" id="MotPasseCompte" placeholder="Entrer Mot de Passe" minlength="8" required>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-success rounded w-100 mt-4 mb-5">
+                            <i class="fa fa-sign-in-alt"></i>
+                            Connexion
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </body>
+    <script type="text/javascript" src="{% static 'bootstrap-5/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+           $("#alert").animate({
+            opacity: 1,
+            }, 2000, function() {
+                $("#alert").delay(8000).fadeOut();
+            });
+        });
+    </script>
+</html>

@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Produit Vendu</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.css' %}">
+    <link rel="stylesheet" href="{% static 'addons/datatables.min.css' %}">
+</head>
+<body id="wrapper">
+    {% include 'navbar.html' %}
+    <div id="content-wrapper">
+        <div class="card shadow-sm rounded-0 mt-3 mx-5 animated--fade-in">
+            <div class="card-header">
+                <h3>Produit Vendu</h3>
+            </div>
+            <div class="card-body rounded-0">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags %}
+                        <div id="alert" class="alert alert-{{ message.tags }} alert-dismissible text-center rounded-0 p-0">
+                        {% endif %}
+                            <strong>{{ message }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'enregistrement' %}" class="btn btn-primary rounded-0 h-25" title="Pour enregistrer un produit vendu">
+                        <i class="fa fa-plus"></i>
+                         Ajouter
+                    </a>
+                    {% if request.user.is_superuser %}
+                    <p>
+                        Ny Stock androany : <strong>{{ total }} Ar</strong>
+                    </p>
+                    <p>
+                        Ambiny androany : <strong>{{ stock }} Ar</strong>
+                    </p>
+                    {% endif %}
+                    <p>
+                        Lafo androany : <strong>{{ vendre_now }} Ar</strong>
+                    </p>
+                    {% if request.user.is_superuser %}
+                        <div class="mb-4">
+                             <a href="{% url 'total' %}" class="btn btn-primary rounded-right rounded-0" title="Pour calculer le prix total des produits vendus">
+                                 Prix Total
+                             </a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div></div>
+                    {% if total_st %}
+                    <p class="text-success">
+                        Mihoatra : <strong>{{ total_st }} Ar</strong>
+                    </p>
+                    {% endif %}
+                    {% if total_st1 %}
+                    <p class="text-danger">
+                        Tsy ampy : <strong>{{ total_st1 }} Ar</strong>
+                    </p>
+                    {% endif %}
+                    <div></div>
+                </div>
+                {% if request.user.is_superuser %}
+                <form action="{% url 'supp_vente' %}" method="get">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <button class="btn btn-danger rounded-0" type="submit">
+                            <i class="fa fa-trash-alt"></i>
+                            Supp.
+                        </button>
+                        <p>
+                            Lafo hatramin'izay : <strong>{{ vendre_all }} Ar</strong>
+                        </p>
+                        <button class="btn btn-danger rounded-0" id="supp_tout" type="button">
+                            <i class="fa fa-trash-alt"></i>
+                            Tout Supp.
+                        </button>
+                    </div>
+                {% endif %}
+                    <table class="table table-bordered table-responsive-lg">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Nom du produit</th>
+                                <th>Quantité</th>
+                                <th>Prix</th>
+                                <th>Date du vente</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for produit in vendu %}
+                            <tr>
+                                <td><input type="checkbox" class="form-control-range" name="id_vendre" value="{{ produit.id_vendre }}"></td>
+                                <td>{{ produit.id_vendre }}</td>
+                                <td>
+                                    {% if produit.produit_id is not None %}
+                                        {{ produit.produit.nom_produit }}
+                                    {% else %}
+                                        < VIDE >
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if produit.produit_id is not None %}
+                                        {{ produit.quantite_vendre }} {{ produit.produit.categorie.nom_categorie }}
+                                    {% else %}
+                                        < VIDE >
+                                    {% endif %}
+                                </td>
+                                <td>{{ produit.prix_total_vendre }} Ar</td>
+                                <td>{{ produit.date_vendre }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirmation de suppression</h5>
+                    <button type="button" class= "close" data-dismiss= "modal" aria-label= "Fermer">
+                        <span>×</span>
+                    </button>
+                </div>
+                <div class= "modal-body">
+                    Êtes-vous sûr de vouloir supprimer tous les éléments?
+                </div>
+                <div class= "modal-footer">
+                    <button type= "button" class= "btn btn-secondary" data-dismiss= "modal">Annuler</button>
+                    <a href="{% url 'supp_tout_vente' %}" class= "btn btn-danger" id= "confirm-delete">Supprimer tout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'datatables/datatables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'modal.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            $("#alert").animate({
+               opacity: 1,
+            }, 2000, function() {
+               $("#alert").delay(10000).fadeOut();
+            });
+            $('#supp_tout').click(function(){
+               $('#deleteModal').modal('show');
+            });
+        });
+    </script>
+</body>
+</html>
