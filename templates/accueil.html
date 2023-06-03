@@ -32,12 +32,12 @@
                          Ajouter
                     </a>
                     {% if request.user.is_superuser %}
-                    <p>
-                        Ny Stock androany : <strong>{{ total }} Ar</strong>
-                    </p>
-                    <p>
-                        Ambiny androany : <strong>{{ stock }} Ar</strong>
-                    </p>
+                        <p>
+                            Ny Stock androany : <strong>{{ total }} Ar</strong>
+                        </p>
+                        <p>
+                            Ambiny androany : <strong>{{ stock }} Ar</strong>
+                        </p>
                     {% endif %}
                     <p>
                         Lafo androany : <strong>{{ vendre_now }} Ar</strong>
@@ -52,16 +52,12 @@
                 </div>
                 <div class="d-flex justify-content-between">
                     <div></div>
-                    {% if total_st %}
                     <p class="text-success">
                         Mihoatra : <strong>{{ total_st }} Ar</strong>
                     </p>
-                    {% endif %}
-                    {% if total_st1 %}
                     <p class="text-danger">
                         Tsy ampy : <strong>{{ total_st1 }} Ar</strong>
                     </p>
-                    {% endif %}
                     <div></div>
                 </div>
                 {% if request.user.is_superuser %}
