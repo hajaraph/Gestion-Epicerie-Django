@@ -29,6 +29,12 @@
                     <span>List Total / Jours</span>
                 </a>
             </li>
+                <li class="nav-item">
+                <a class="nav-link {{ active_rendu }}" href="{% url 'inventaire' %}">
+                    <i class="fas fa-computer"></i>
+                    <span>inventaire</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link {{ active_stock }}" href="{% url 'stock_produit' %}">
                     <i class="fas fa-warehouse"></i>

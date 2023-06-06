@@ -14,15 +14,7 @@
                     <h4 class="text-center mb-5 mt-5">Authentification</h4>
                     <form method="post">
                         {% csrf_token %}
-                        {% if messages %}
-                            {% for message in messages %}
-                                {% if message.tags %}
-                                <div id="alert" class="alert alert-{{ message.tags }} alert-dismissible text-center p-0">
-                                {% endif %}
-                                    <strong>{{ message }}</strong>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
+                        {% include 'message.html' %}
                         <div>
                             <label for="EmailCompte" class="form-label">Nom d'utilisateur *</label>
                             <div class="input-group">

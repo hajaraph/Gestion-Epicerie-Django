@@ -8,7 +8,7 @@ from datetime import date
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 
-from epicerie.models import Categorie, Vendre, Produit, StockProduit, TotalStock
+from epicerie.models import Categorie, Vendre, Produit, StockProduit, TotalStock, Inventaire
 
 
 def accueil(request):
@@ -397,6 +397,7 @@ class SaveStock(View):
             stock_exist.date_stock = date_now
             stock_exist.save()
             total_exist(prix_total, date_now)
+            save_inventaire(produit_id, quantite, prix_total)
             messages.success(request, f'\"{quantite} {prix.categorie.nom_categorie}\" du produit'
                                       f' \"{stock_exist.produit.nom_produit}\"'
                                       f' est ajouté avec succès !')
@@ -408,6 +409,7 @@ class SaveStock(View):
                 date_stock=date_now,
             )
             total_exist(prix_total, date_now)
+            save_inventaire(produit_id, quantite, prix_total)
             messages.success(request, f'Le produit \"{prix.nom_produit}\" '
                                       f'est enregistré avec succès dans le stock !')
         return redirect('stock_produit')
@@ -502,3 +504,44 @@ def list_total(request):
     active = 'active'
     total_list = TotalStock.objects.all()
     return render(request, 'total_list.html', {'total': total_list, 'active_list': active})
+
+
+def inventaire(request):
+    if request.user.is_authenticated:
+        active = 'active'
+        stock_pro = TotalStock.objects.last()
+        stock_all = stock_pro.total
+        inventair = Inventaire.objects.all()
+        total_inve = inventair.aggregate(Sum('total_prix'))['total_prix__sum'] or 0
+        manque = 0
+        trop = 0
+        if stock_all > total_inve:
+            manque = stock_all - total_inve
+        elif stock_all < total_inve:
+            trop = total_inve - stock_all
+        else:
+            manque = 0
+            trop = 0
+        donne = {'active_rendu': active, 'total_restant': stock_all,
+                 'total_inve': total_inve, 'manque': manque, 'trop': trop, 'inventaire': inventair}
+        return render(request, 'Inventaire.html', donne)
+    else:
+        messages.warning(request, f'Vous devriez vous connecté d\'abord !')
+        return redirect('connexion')
+
+
+def save_inventaire(produit_id, nb_produit, total_prix):
+    date_inventaire = date.today()
+    invente = Inventaire.objects.filter(produit_id=produit_id).exists()
+    if invente:
+        invente = get_object_or_404(Inventaire, produit_id=produit_id)
+        invente.nb_produit += nb_produit
+        invente.total_prix += total_prix
+        invente.save()
+    else:
+        Inventaire.objects.create(
+            produit_id=produit_id,
+            nb_produit=nb_produit,
+            total_prix=total_prix,
+            date_inventaire=date_inventaire
+        )

@@ -16,15 +16,7 @@
                 <h3>Stock des Produits</h3>
             </div>
             <div class="card-body">
-                {% if messages %}
-                    {% for message in messages %}
-                        {% if message.tags %}
-                        <div id="alert" class="alert alert-{{ message.tags }} alert-dismissible text-center rounded-0 p-0">
-                        {% endif %}
-                            <strong>{{ message }}</strong>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+                {% include 'message.html' %}
                 <form action="{% url 'supp_stock' %}" method="get">
                     {% csrf_token %}
                     <div class="d-flex justify-content-between">
@@ -71,7 +63,11 @@
                                 <td class="{% if produit.quantite_stock == 0 %}alert-danger{% endif %} {% if produit.quantite_stock <= 2 %}alert-warning{% endif %}">
                                     {{ produit.date_stock }}
                                 </td>
-                                <td><a href="{% url 'mod_stock' produit.id_stock %}" class="btn btn-sm btn-warning" title="Modifier"><i class="fa fa-edit"></i></a></td>
+                                <td>
+                                    <a href="{% url 'mod_stock' produit.id_stock %}" class="btn btn-sm btn-warning" title="Modifier">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>

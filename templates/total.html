@@ -24,15 +24,7 @@
                             Calcul entre deux date
                         </div>
                         <div class="card-body">
-                            {% if messages %}
-                                {% for message in messages %}
-                                    {% if message.tags %}
-                                    <div id="alert" class="alert alert-{{ message.tags }} alert-dismissible text-center rounded-0 p-0">
-                                    {% endif %}
-                                        <strong>{{ message }}</strong>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
+                            {% include 'message.html' %}
                             <form action="{% url 'calcul_total_2date' %}" method="get">
                                 {% csrf_token %}
                                 <div class="row">

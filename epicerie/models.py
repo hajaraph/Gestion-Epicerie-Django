@@ -33,3 +33,16 @@ class TotalStock(models.Model):
     id_total = models.IntegerField(verbose_name='ID', auto_created=True, primary_key=True)
     total = models.IntegerField(blank=False)
     date_total = models.DateField(blank=False)
+
+
+class Inventaire(models.Model):
+    id_inventaire = models.IntegerField(verbose_name='ID', auto_created=True, primary_key=True)
+    produit = models.ForeignKey(Produit, blank=True, on_delete=models.CASCADE)
+    nb_produit = models.FloatField(blank=False)
+    total_prix = models.IntegerField(blank=False)
+    date_inventaire = models.DateField(blank=False)
+
+
+class StockRestant(models.Model):
+    id_restant = models.IntegerField(verbose_name='ID', auto_created=True, primary_key=True)
+    stock_restant = models.IntegerField(blank=False)

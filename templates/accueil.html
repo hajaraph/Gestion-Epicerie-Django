@@ -17,15 +17,7 @@
                 <h3>Produit Vendu</h3>
             </div>
             <div class="card-body rounded-0">
-                {% if messages %}
-                    {% for message in messages %}
-                        {% if message.tags %}
-                        <div id="alert" class="alert alert-{{ message.tags }} alert-dismissible text-center rounded-0 p-0">
-                        {% endif %}
-                            <strong>{{ message }}</strong>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+                {% include 'message.html' %}
                 <div class="d-flex justify-content-between">
                     <a href="{% url 'enregistrement' %}" class="btn btn-primary rounded-0 h-25" title="Pour enregistrer un produit vendu">
                         <i class="fa fa-plus"></i>
