@@ -8,7 +8,7 @@ from datetime import date
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 
-from epicerie.models import Categorie, Vendre, Produit, StockProduit, TotalStock, Inventaire
+from epicerie.models import Categorie, Vendre, Produit, StockProduit, TotalStock, Inventaire, StockRestant
 
 
 def accueil(request):
@@ -509,21 +509,27 @@ def list_total(request):
 def inventaire(request):
     if request.user.is_authenticated:
         active = 'active'
-        stock_pro = TotalStock.objects.last()
-        stock_all = stock_pro.total
+        stock_all = TotalStock.objects.last()
+        stock_all = stock_all.total
+        stock_restant(stock_all)
+        stock_rest = StockRestant.objects.first()
+        stock_rest = stock_rest.stock_restant
         inventair = Inventaire.objects.all()
+        stock_pro = StockProduit.objects.order_by('-date_stock').all()
+        stock_pro = stock_pro.aggregate(Sum('prix_total'))['prix_total__sum'] or 0
         total_inve = inventair.aggregate(Sum('total_prix'))['total_prix__sum'] or 0
         manque = 0
         trop = 0
-        if stock_all > total_inve:
-            manque = stock_all - total_inve
-        elif stock_all < total_inve:
-            trop = total_inve - stock_all
+        if stock_rest > total_inve:
+            manque = stock_rest - total_inve
+        elif stock_rest < total_inve:
+            trop = total_inve - stock_rest
         else:
             manque = 0
             trop = 0
-        donne = {'active_rendu': active, 'total_restant': stock_all,
-                 'total_inve': total_inve, 'manque': manque, 'trop': trop, 'inventaire': inventair}
+        donne = {'active_rendu': active, 'total_restant': stock_rest,
+                 'total_inve': total_inve, 'manque': manque, 'trop': trop,
+                 'inventaire': inventair, 'stock': stock_pro}
         return render(request, 'Inventaire.html', donne)
     else:
         messages.warning(request, f'Vous devriez vous connecté d\'abord !')
@@ -545,3 +551,20 @@ def save_inventaire(produit_id, nb_produit, total_prix):
             total_prix=total_prix,
             date_inventaire=date_inventaire
         )
+
+
+def stock_restant(stockrestant):
+    StockRestant.objects.create(
+        stock_restant=stockrestant
+    )
+
+
+def supp_tout(request):
+    if request.user.is_authenticated:
+        Inventaire.objects.all().delete()
+        StockRestant.objects.all().delete()
+        messages.success(request, f'Tout Supprimer avec succès !')
+        return redirect('inventaire')
+    else:
+        messages.warning(request, f'Vous devriez vous connecté d\'abord !')
+        return redirect('connexion')

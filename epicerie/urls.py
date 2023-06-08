@@ -1,7 +1,7 @@
 from django.urls import path
 from epicerie.views import Connexion, deconnexion, accueil, produit_list, Produitvendu,\
     SaveProduit, SaveStock, Stock, ModProduit, supp_stock, supp_produit, supp_vente,\
-    supp_tout_vente, total, PrixTotal, ModStock, list_total, supp_total, inventaire
+    supp_tout_vente, total, PrixTotal, ModStock, list_total, supp_total, inventaire, supp_tout
 
 urlpatterns = [
     path('', Connexion.as_view(), name='connexion'),
@@ -23,4 +23,5 @@ urlpatterns = [
     path('total_list/', list_total, name='list_total'),
     path('supp_total/', supp_total, name='supp_total'),
     path('inventaire/', inventaire, name='inventaire'),
+    path('inventaire/Supprimer', supp_tout, name='supp_tout'),
 ]
