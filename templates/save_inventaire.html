@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventaire | Produit</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+</head>
+<body class="d-flex justify-content-center align-content-center bg-light">
+    <div class="card shadow rounded-0 border-0 px-5 py-3">
+        <div class="card-header border-0 text-center">
+            <h1>Inventaire | Produit</h1>
+        </div>
+        <div class="card-body">
+            <div class="px-5">
+                {% include 'message.html' %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <label for="nom_produit">Nom produit</label>
+                        <select name="nom_produit" id="nom_produit" class="form-control rounded-0" required>
+                            <option selected hidden></option>
+                        {% for produit in produit %}
+                            <option value="{{ produit.id_produit }}">{{ produit.nom_produit }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row my-4">
+                        <label for="quantite_stock">Quantité (Nombre/Kg/Litre/Kapoaka)</label>
+                        <input type="text" name="quantite_stock" id="quantite_stock" class="form-control rounded-0" pattern="[0-9.]+">
+                    </div>
+                    <div class="row">
+                        <button class="btn btn-primary rounded-0" type="submit">Enregistrer</button>
+                        <a href="{% url 'stock_produit' %}" class="btn btn-danger rounded-0 mx-4">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'modal.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+           $("#alert").animate({
+            opacity: 1,
+            }, 2000, function() {
+                $("#alert").delay(10000).fadeOut();
+            });
+        });
+    </script>
+</body>
+</html>

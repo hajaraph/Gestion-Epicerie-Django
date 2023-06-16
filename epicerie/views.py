@@ -256,7 +256,7 @@ class Produitvendu(View):
                     date_new = request.POST['date_new']
                     prix_stock = stock_new.prix_total
                     if prix_produit <= prix_stock:
-                        if pro_categorie == 2 or pro_categorie == 4:
+                        if pro_categorie == 2 or pro_categorie == 4 or pro_categorie == 3:
                             quantite_vendu = (stock_new.quantite_stock * prix_produit) / prix_stock
                             quantite_vendu = round(quantite_vendu, 2)
                             quantite_stock = stock_new.quantite_stock - quantite_vendu
@@ -397,7 +397,6 @@ class SaveStock(View):
             stock_exist.date_stock = date_now
             stock_exist.save()
             total_exist(prix_total, date_now)
-            save_inventaire(produit_id, quantite, prix_total)
             messages.success(request, f'\"{quantite} {prix.categorie.nom_categorie}\" du produit'
                                       f' \"{stock_exist.produit.nom_produit}\"'
                                       f' est ajouté avec succès !')
@@ -409,7 +408,6 @@ class SaveStock(View):
                 date_stock=date_now,
             )
             total_exist(prix_total, date_now)
-            save_inventaire(produit_id, quantite, prix_total)
             messages.success(request, f'Le produit \"{prix.nom_produit}\" '
                                       f'est enregistré avec succès dans le stock !')
         return redirect('stock_produit')
@@ -510,25 +508,24 @@ def inventaire(request):
     if request.user.is_authenticated:
         active = 'active'
         stock_all = TotalStock.objects.last()
-        stock_all = stock_all.total
-        stock_restant(stock_all)
+        stock_restant(stock_all.total, stock_all.date_total)
         stock_rest = StockRestant.objects.first()
-        stock_rest = stock_rest.stock_restant
+        stock_reste = stock_rest.stock_restant
         inventair = Inventaire.objects.all()
-        stock_pro = StockProduit.objects.order_by('-date_stock').all()
+        stock_pro = StockProduit.objects.all()
         stock_pro = stock_pro.aggregate(Sum('prix_total'))['prix_total__sum'] or 0
         total_inve = inventair.aggregate(Sum('total_prix'))['total_prix__sum'] or 0
         manque = 0
         trop = 0
-        if stock_rest > total_inve:
-            manque = stock_rest - total_inve
-        elif stock_rest < total_inve:
-            trop = total_inve - stock_rest
+        egal = False
+        if stock_pro > total_inve:
+            manque = stock_pro - total_inve
+        elif stock_pro < total_inve:
+            trop = total_inve - stock_pro
         else:
-            manque = 0
-            trop = 0
-        donne = {'active_rendu': active, 'total_restant': stock_rest,
-                 'total_inve': total_inve, 'manque': manque, 'trop': trop,
+            egal = True
+        donne = {'active_rendu': active, 'total_restant': stock_reste, 'date_restant': stock_rest.date_restant,
+                 'total_inve': total_inve, 'manque': manque, 'trop': trop, 'egal': egal,
                  'inventaire': inventair, 'stock': stock_pro}
         return render(request, 'Inventaire.html', donne)
     else:
@@ -536,26 +533,42 @@ def inventaire(request):
         return redirect('connexion')
 
 
-def save_inventaire(produit_id, nb_produit, total_prix):
-    date_inventaire = date.today()
-    invente = Inventaire.objects.filter(produit_id=produit_id).exists()
-    if invente:
-        invente = get_object_or_404(Inventaire, produit_id=produit_id)
-        invente.nb_produit += nb_produit
-        invente.total_prix += total_prix
-        invente.save()
-    else:
-        Inventaire.objects.create(
-            produit_id=produit_id,
-            nb_produit=nb_produit,
-            total_prix=total_prix,
-            date_inventaire=date_inventaire
-        )
+class save_inventaire(View):
+    @staticmethod
+    def get(request):
+        produit = Produit.objects.all()
+        donne = {'produit': produit}
+        return render(request, 'save_inventaire.html', donne)
+
+    @staticmethod
+    def post(request):
+        produit_id = request.POST['nom_produit']
+        quantite_stock = float(request.POST['quantite_stock'])
+        produit_prix = Produit.objects.filter(id_produit=produit_id).first().prix_produit
+        quantite = StockProduit.objects.filter(produit_id=produit_id).first().quantite_stock
+        inv_exist = Inventaire.objects.filter(produit_id=produit_id).exists()
+        if inv_exist:
+            get_inve = get_object_or_404(Inventaire, produit_id=produit_id)
+            get_inve.nb_produit += quantite_stock
+            get_inve.total_prix = get_inve.nb_produit * produit_prix
+            get_inve.save()
+        else:
+            total_prix = quantite_stock * produit_prix
+            date_inventaire = date.today()
+            Inventaire.objects.create(
+                produit_id=produit_id,
+                nb_produit=quantite_stock,
+                total_prix=total_prix,
+                date_inventaire=date_inventaire
+            )
+        messages.success(request, f"Produit enrgistrer dans l'inventaire avec succès !")
+        return redirect('inventaire')
 
 
-def stock_restant(stockrestant):
+def stock_restant(stock_Restant, date_restant):
     StockRestant.objects.create(
-        stock_restant=stockrestant
+        stock_restant=stock_Restant,
+        date_restant=date_restant,
     )
 
 
