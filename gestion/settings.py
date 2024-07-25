@@ -28,7 +28,7 @@ environ.Env.read_env(env_file=str(BASE_DIR / "gestion" / ".env"))
 SECRET_KEY = '3ud%n&o9_k$b&mi(aojn%023i11s*m_-)jt(7j-=$4rx*0bi-('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG')
+DEBUG = True
 
 # ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
