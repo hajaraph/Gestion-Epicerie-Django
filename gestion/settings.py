@@ -32,7 +32,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'demondra.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'demondra.pythonanywhere.com/Gestion-Epicerie-Django']
 # Application definition
 
 INSTALLED_APPS = [
